@@ -530,6 +530,36 @@
     .booking-card .detail-row {
       margin-bottom: 0.5rem;
     }
+
+    .share-container {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .share-input {
+      background: var(--background);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-color);
+      width: 200px;
+    }
+
+    .share-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .share-btn:hover {
+      background: var(--primary-hover);
+    }
   </style>
 </head>
 <body>
@@ -686,6 +716,15 @@
           <div class="detail-row">
             <span class="detail-label">สถานะอีเมล:</span>
             <span class="detail-value" id="emailStatus"></span>
+          </div>
+          <div class="detail-row" id="shareRow" style="display: none;">
+            <span class="detail-label">ลิงก์แชร์:</span>
+            <div class="share-container">
+              <input type="text" id="shareLink" readonly class="share-input"/>
+              <button onclick="copyShareLink()" class="share-btn">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
           </div>
         </div>
         <div id="qr" class="qr-container"></div>
@@ -1047,10 +1086,14 @@
           return;
         }
 
+        // Check if this is a public booking link
+        const urlParams = new URLSearchParams(window.location.search);
+        const isPublic = urlParams.has('public');
+
         const res = await fetch("/book", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date, time })
+          body: JSON.stringify({ date, time, isPublic })
         });
 
         const data = await res.json();
@@ -1058,6 +1101,14 @@
         if (res.ok) {
           showAlert(data.message, 'success');
           displayBookingResult(data.booking, data.recentBookings);
+          
+          // Show share link if this is a public booking
+          if (data.booking.isPublic) {
+            const shareRow = document.getElementById('shareRow');
+            const shareLink = document.getElementById('shareLink');
+            shareRow.style.display = 'flex';
+            shareLink.value = `${window.location.origin}/book/${data.booking.token}`;
+          }
         } else {
           showAlert(data.message, 'error');
         }
@@ -1116,6 +1167,26 @@
         showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
       }
     }
+
+    // Add function to copy share link
+    function copyShareLink() {
+      const shareLink = document.getElementById('shareLink');
+      shareLink.select();
+      document.execCommand('copy');
+      showAlert('คัดลอกลิงก์แล้ว', 'success');
+    }
+
+    // Check for public booking token on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const path = window.location.pathname;
+      if (path.startsWith('/book/')) {
+        const token = path.split('/').pop();
+        // Hide login/signup boxes and show booking box
+        document.getElementById('loginBox').classList.add('hide');
+        document.getElementById('signupBox').classList.add('hide');
+        document.getElementById('bookingBox').classList.remove('hide');
+      }
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ไม่พบลิงก์การจอง - ระบบจองคิว</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary-color: #4F46E5;
+      --error-color: #EF4444;
+      --text-color: #1F2937;
+      --background: #F3F4F6;
+      --white: #FFFFFF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: var(--background);
+      color: var(--text-color);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 480px;
+      padding: 2rem;
+      background: var(--white);
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--error-color);
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background: #4338CA;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ไม่พบลิงก์การจอง</h1>
+    <p>ลิงก์การจองที่คุณกำลังค้นหาอาจไม่ถูกต้องหรือหมดอายุแล้ว</p>
+    <a href="/" class="btn">กลับไปหน้าหลัก</a>
+  </div>
+</body>
+</html> 
