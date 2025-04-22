@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ระบบจองคิว</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-color: #4F46E5;
+      --primary-hover: #4338CA;
+      --error-color: #EF4444;
+      --success-color: #10B981;
+      --text-color: #1F2937;
+      --text-light: #6B7280;
+      --background: #F3F4F6;
+      --white: #FFFFFF;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --border-color: #E5E7EB;
+      --active-bg: #EEF2FF;
+      --hover-bg: #F3F4F6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: var(--background);
+      color: var(--text-color);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .box {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .box:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      color: var(--text-color);
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-size: 0.875rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #E5E7EB;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .link:hover {
+      color: var(--primary-hover);
+    }
+
+    .text-center {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-light);
+    }
+
+    .hide {
+      display: none;
+    }
+
+    #qr {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    #qr img {
+      max-width: 200px;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .alert-success {
+      background: #ECFDF5;
+      color: var(--success-color);
+      border: 1px solid #A7F3D0;
+    }
+
+    .alert-error {
+      background: #FEF2F2;
+      color: var(--error-color);
+      border: 1px solid #FECACA;
+    }
+
+    .loading {
+      position: relative;
+      pointer-events: none;
+    }
+
+    .loading::after {
+      content: "";
+      position: absolute;
+      width: 1rem;
+      height: 1rem;
+      top: 50%;
+      left: 50%;
+      margin: -0.5rem 0 0 -0.5rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+      .box {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Date Picker Styles */
+    .date-picker-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .date-input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .date-input {
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    .calendar-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .date-picker-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 720px;
+      background: var(--white);
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      margin-top: 0.5rem;
+      display: none;
+      z-index: 1000;
+    }
+
+    .date-picker-dropdown.show {
+      display: flex;
+    }
+
+    .presets {
+      width: 200px;
+      border-right: 1px solid var(--border-color);
+      padding-right: 1rem;
+    }
+
+    .preset-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      border: none;
+      background: none;
+      color: var(--text-color);
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+
+    .preset-btn:hover {
+      background: var(--hover-bg);
+    }
+
+    .preset-btn.active {
+      background: var(--active-bg);
+      color: var(--primary-color);
+    }
+
+    .preset-date {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      margin-left: 0.5rem;
+    }
+
+    .calendars {
+      flex: 1;
+      display: flex;
+      padding-left: 1rem;
+    }
+
+    .calendar {
+      flex: 1;
+      padding: 0 0.5rem;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .month-nav {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    .month-nav:hover {
+      background: var(--hover-bg);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.25rem;
+      text-align: center;
+    }
+
+    .calendar-day-header {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      padding: 0.5rem 0;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    .calendar-day:hover {
+      background: var(--hover-bg);
+    }
+
+    .calendar-day.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .calendar-day.in-range {
+      background: var(--active-bg);
+      color: var(--primary-color);
+    }
+
+    .calendar-day.today {
+      font-weight: 600;
+    }
+
+    .calendar-day.disabled {
+      color: var(--text-light);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .date-range-inputs {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .date-range-inputs input {
+      flex: 1;
+    }
+
+    .date-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .date-actions button {
+      width: auto;
+      padding: 0.5rem 1rem;
+    }
+
+    .date-actions button.cancel {
+      background: transparent;
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .date-actions button.cancel:hover {
+      background: var(--hover-bg);
+    }
+
+    .booking-result {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .booking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .booking-header h3 {
+      margin: 0;
+      color: var(--text-color);
+      font-size: 1.25rem;
+    }
+
+    .booking-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      background: var(--success-color);
+      color: white;
+    }
+
+    .booking-details {
+      background: var(--background);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .detail-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-label {
+      color: var(--text-light);
+      font-size: 0.875rem;
+    }
+
+    .detail-value {
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .qr-container {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    .qr-container img {
+      max-width: 200px;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .qr-help {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    .secondary-btn {
+      background: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      margin-top: 1rem;
+    }
+
+    .secondary-btn:hover {
+      background: var(--active-bg);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--white);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .close-btn:hover {
+      color: var(--text-color);
+    }
+
+    .booking-history {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .booking-card {
+      background: var(--background);
+      border-radius: 0.5rem;
+      padding: 1rem;
+    }
+
+    .booking-card .detail-row {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="box" id="loginBox">
+      <h2>เข้าสู่ระบบ</h2>
+      <div class="form-group">
+        <label class="form-label" for="loginUser">ชื่อผู้ใช้</label>
+        <input id="loginUser" placeholder="กรอกชื่อผู้ใช้"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="loginPass">รหัสผ่าน</label>
+        <input id="loginPass" type="password" placeholder="กรอกรหัสผ่าน"/>
+      </div>
+      <button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
+      <p class="text-center">ยังไม่มีบัญชี? <a href="#" class="link" onclick="showSignup()">สมัครสมาชิก</a></p>
+    </div>
+
+    <div class="box hide" id="signupBox">
+      <h2>สมัครสมาชิก</h2>
+      <div class="form-group">
+        <label class="form-label" for="signupUser">ชื่อผู้ใช้</label>
+        <input id="signupUser" placeholder="กรอกชื่อผู้ใช้"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="signupPass">รหัสผ่าน</label>
+        <input id="signupPass" type="password" placeholder="กรอกรหัสผ่าน"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="signupEmail">อีเมล</label>
+        <input id="signupEmail" type="email" placeholder="กรอกอีเมล"/>
+      </div>
+      <button onclick="signup()" id="signupBtn">สมัครสมาชิก</button>
+      <p class="text-center"><a href="#" class="link" onclick="showLogin()">กลับสู่หน้าล็อกอิน</a></p>
+    </div>
+
+    <div class="box hide" id="bookingBox">
+      <h2>จองคิว</h2>
+      <div class="form-group">
+        <label class="form-label" for="dateRange">ช่วงเวลาที่ต้องการจอง</label>
+        <div class="date-picker-container">
+          <div class="date-input-wrapper">
+            <input type="text" id="dateRange" class="date-input" readonly placeholder="เลือกช่วงเวลา" />
+            <i class="bi bi-calendar4 calendar-icon"></i>
+          </div>
+          <div class="date-picker-dropdown">
+            <div class="presets">
+              <button class="preset-btn active">
+                Today
+                <span class="preset-date">15 Sep 2022</span>
+              </button>
+              <button class="preset-btn">
+                Yesterday
+                <span class="preset-date">14 Sep 2022</span>
+              </button>
+              <button class="preset-btn">
+                This week
+                <span class="preset-date">12 Sep - 18 Sep 2022</span>
+              </button>
+              <button class="preset-btn">
+                Last week
+                <span class="preset-date">5 Sep - 11 Sep 2022</span>
+              </button>
+              <button class="preset-btn">
+                This month
+                <span class="preset-date">1 Sep - 30 Sep 2022</span>
+              </button>
+              <button class="preset-btn">
+                Last month
+                <span class="preset-date">1 Aug - 31 Aug 2022</span>
+              </button>
+              <button class="preset-btn">
+                This year
+                <span class="preset-date">1 Jan - 31 Dec 2022</span>
+              </button>
+              <button class="preset-btn">
+                All time
+                <span class="preset-date">1 Jan - 15 Sep 2022</span>
+              </button>
+            </div>
+            <div class="calendars">
+              <div class="calendar">
+                <div class="calendar-header">
+                  <button class="month-nav prev-month">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <span>September 2022</span>
+                  <button class="month-nav next-month">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+                <div class="calendar-grid">
+                  <div class="calendar-day-header">Mo</div>
+                  <div class="calendar-day-header">Tu</div>
+                  <div class="calendar-day-header">We</div>
+                  <div class="calendar-day-header">Th</div>
+                  <div class="calendar-day-header">Fr</div>
+                  <div class="calendar-day-header">Sa</div>
+                  <div class="calendar-day-header">Su</div>
+                  <!-- Calendar days will be inserted here by JavaScript -->
+                </div>
+              </div>
+              <div class="calendar">
+                <div class="calendar-header">
+                  <button class="month-nav prev-month">
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <span>October 2022</span>
+                  <button class="month-nav next-month">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
+                <div class="calendar-grid">
+                  <!-- Same structure as above -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="time">เวลา</label>
+        <input type="time" id="time"/>
+      </div>
+      <button onclick="book()" id="bookBtn">ยืนยันการจอง</button>
+      
+      <!-- Booking result section -->
+      <div id="bookingResult" class="booking-result hide">
+        <div class="booking-header">
+          <h3>รายละเอียดการจอง</h3>
+          <span class="booking-status"></span>
+        </div>
+        <div class="booking-details">
+          <div class="detail-row">
+            <span class="detail-label">หมายเลขการจอง:</span>
+            <span class="detail-value" id="bookingId"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">ชื่อผู้จอง:</span>
+            <span class="detail-value" id="bookingUser"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">วันที่:</span>
+            <span class="detail-value" id="bookingDate"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">เวลา:</span>
+            <span class="detail-value" id="bookingTime"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">อีเมล:</span>
+            <span class="detail-value" id="bookingEmail"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">สถานะอีเมล:</span>
+            <span class="detail-value" id="emailStatus"></span>
+          </div>
+        </div>
+        <div id="qr" class="qr-container"></div>
+        <p class="qr-help">กรุณาแสดง QR Code นี้เมื่อมาใช้บริการ</p>
+
+        <!-- Recent bookings section -->
+        <div class="recent-bookings">
+          <h3>ประวัติการจองล่าสุด</h3>
+          <div id="recentBookingsList" class="booking-history"></div>
+        </div>
+      </div>
+
+      <button onclick="logout()" class="link" style="background: transparent; color: var(--text-light);">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <script>
+    // Date formatting utilities for Thai locale
+    const thaiLocale = {
+      months: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 
+               'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+      shortMonths: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+                    'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+      days: ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'],
+      shortDays: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.']
+    };
+
+    function formatThaiDate(date) {
+      const buddhistYear = date.getFullYear() + 543;
+      const month = thaiLocale.months[date.getMonth()];
+      const day = date.getDate();
+      return `${day} ${month} ${buddhistYear}`;
+    }
+
+    function formatShortThaiDate(date) {
+      const buddhistYear = date.getFullYear() + 543;
+      const month = thaiLocale.shortMonths[date.getMonth()];
+      const day = date.getDate();
+      return `${day} ${month} ${buddhistYear}`;
+    }
+
+    // Get dates for presets in Thailand timezone
+    function getThaiDate() {
+      return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
+    }
+
+    function getPresetDates() {
+      const today = getThaiDate();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const thisWeekStart = new Date(today);
+      thisWeekStart.setDate(today.getDate() - today.getDay() + 1);
+      const thisWeekEnd = new Date(thisWeekStart);
+      thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
+
+      const lastWeekStart = new Date(thisWeekStart);
+      lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+      const lastWeekEnd = new Date(lastWeekStart);
+      lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+
+      const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+      const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+
+      return {
+        today: { start: today, end: today },
+        yesterday: { start: yesterday, end: yesterday },
+        thisWeek: { start: thisWeekStart, end: thisWeekEnd },
+        lastWeek: { start: lastWeekStart, end: lastWeekEnd },
+        thisMonth: { start: thisMonthStart, end: thisMonthEnd },
+        lastMonth: { start: lastMonthStart, end: lastMonthEnd }
+      };
+    }
+
+    // Update preset buttons with current dates
+    function updatePresetDates() {
+      const dates = getPresetDates();
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      
+      presetBtns.forEach(btn => {
+        const text = btn.childNodes[0].textContent.trim();
+        let dateRange;
+        
+        switch(text) {
+          case 'Today':
+            dateRange = formatThaiDate(dates.today.start);
+            btn.querySelector('.preset-date').textContent = dateRange;
+            break;
+          case 'Yesterday':
+            dateRange = formatThaiDate(dates.yesterday.start);
+            btn.querySelector('.preset-date').textContent = dateRange;
+            break;
+          case 'This week':
+            dateRange = `${formatShortThaiDate(dates.thisWeek.start)} - ${formatShortThaiDate(dates.thisWeek.end)}`;
+            btn.querySelector('.preset-date').textContent = dateRange;
+            break;
+          case 'Last week':
+            dateRange = `${formatShortThaiDate(dates.lastWeek.start)} - ${formatShortThaiDate(dates.lastWeek.end)}`;
+            btn.querySelector('.preset-date').textContent = dateRange;
+            break;
+          case 'This month':
+            dateRange = `${formatShortThaiDate(dates.thisMonth.start)} - ${formatShortThaiDate(dates.thisMonth.end)}`;
+            btn.querySelector('.preset-date').textContent = dateRange;
+            break;
+          case 'Last month':
+            dateRange = `${formatShortThaiDate(dates.lastMonth.start)} - ${formatShortThaiDate(dates.lastMonth.end)}`;
+            btn.querySelector('.preset-date').textContent = dateRange;
+            break;
+        }
+      });
+    }
+
+    // Generate calendar with Thai locale
+    function generateCalendarDays(year, month, calendar) {
+      const grid = calendar.querySelector('.calendar-grid');
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const days = lastDay.getDate();
+      const firstDayIndex = (firstDay.getDay() + 6) % 7; // Monday as first day
+
+      // Update month header
+      calendar.querySelector('.calendar-header span').textContent = 
+        `${thaiLocale.months[month]} ${year + 543}`;
+
+      // Clear existing days
+      const headerCells = Array.from(grid.querySelectorAll('.calendar-day-header'));
+      grid.innerHTML = '';
+      
+      // Add day headers in Thai
+      thaiLocale.shortDays.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day-header';
+        dayHeader.textContent = day;
+        grid.appendChild(dayHeader);
+      });
+
+      // Add empty cells for days before first day of month
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day';
+        grid.appendChild(emptyDay);
+      }
+
+      // Add days
+      const today = getThaiDate();
+      for (let day = 1; day <= days; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = day;
+        
+        const currentDate = new Date(year, month, day);
+        
+        if (currentDate < today) {
+          dayElement.classList.add('disabled');
+        } else if (year === today.getFullYear() && 
+                  month === today.getMonth() && 
+                  day === today.getDate()) {
+          dayElement.classList.add('today');
+        }
+        
+        if (!dayElement.classList.contains('disabled')) {
+          dayElement.addEventListener('click', function() {
+            const activeDays = grid.querySelectorAll('.calendar-day.active');
+            if (activeDays.length === 0 || activeDays.length === 2) {
+              // Start new selection
+              document.querySelectorAll('.calendar-day').forEach(d => {
+                d.classList.remove('active', 'in-range');
+              });
+              this.classList.add('active');
+            } else {
+              // Complete the range
+              this.classList.add('active');
+              updateDateRange();
+            }
+          });
+        }
+        
+        grid.appendChild(dayElement);
+      }
+    }
+
+    function updateDateRange() {
+      const activeDays = document.querySelectorAll('.calendar-day.active');
+      if (activeDays.length === 2) {
+        const dates = Array.from(activeDays).map(day => {
+          const month = day.closest('.calendar').querySelector('.calendar-header span').textContent;
+          return new Date(month + ' ' + day.textContent);
+        }).sort((a, b) => a - b);
+
+        const dateInput = document.getElementById('dateRange');
+        dateInput.value = `${formatShortThaiDate(dates[0])} - ${formatShortThaiDate(dates[1])}`;
+      }
+    }
+
+    // Initialize date picker
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateInput = document.getElementById('dateRange');
+      const dropdown = document.querySelector('.date-picker-dropdown');
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      
+      // Update preset dates
+      updatePresetDates();
+      
+      // Toggle dropdown
+      dateInput.addEventListener('click', function() {
+        dropdown.classList.toggle('show');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== dateInput) {
+          dropdown.classList.remove('show');
+        }
+      });
+
+      // Handle preset selection
+      presetBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          presetBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          dateInput.value = this.querySelector('.preset-date').textContent;
+          dropdown.classList.remove('show');
+        });
+      });
+
+      // Initialize calendars
+      const calendars = document.querySelectorAll('.calendar');
+      const today = getThaiDate();
+      generateCalendarDays(today.getFullYear(), today.getMonth(), calendars[0]);
+      generateCalendarDays(today.getFullYear(), today.getMonth() + 1, calendars[1]);
+
+      // Handle month navigation
+      document.querySelectorAll('.month-nav').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const calendar = btn.closest('.calendar');
+          const headerText = calendar.querySelector('.calendar-header span').textContent;
+          const [month, year] = headerText.split(' ');
+          const monthIndex = thaiLocale.months.indexOf(month);
+          const westernYear = parseInt(year) - 543;
+          
+          let newMonth, newYear;
+          if (btn.classList.contains('prev-month')) {
+            newMonth = monthIndex - 1;
+            newYear = newMonth < 0 ? westernYear - 1 : westernYear;
+            newMonth = newMonth < 0 ? 11 : newMonth;
+          } else {
+            newMonth = monthIndex + 1;
+            newYear = newMonth > 11 ? westernYear + 1 : westernYear;
+            newMonth = newMonth > 11 ? 0 : newMonth;
+          }
+          
+          generateCalendarDays(newYear, newMonth, calendar);
+        });
+      });
+    });
+
+    function showSignup() {
+      loginBox.classList.add("hide");
+      signupBox.classList.remove("hide");
+    }
+
+    function showLogin() {
+      signupBox.classList.add("hide");
+      loginBox.classList.remove("hide");
+    }
+
+    function showAlert(message, type) {
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      document.querySelector('.container').insertBefore(alert, document.querySelector('.box'));
+      setTimeout(() => alert.remove(), 3000);
+    }
+
+    async function signup() {
+      const btn = document.getElementById('signupBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const user = signupUser.value;
+        const pass = signupPass.value;
+        const email = signupEmail.value;
+        
+        if (!user || !pass || !email) {
+          showAlert('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+          return;
+        }
+
+        const res = await fetch("/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user, pass, email })
+        });
+
+        if (res.ok) {
+          showAlert('สมัครสมาชิกสำเร็จ', 'success');
+          showLogin();
+        } else {
+          showAlert('มีผู้ใช้นี้แล้ว', 'error');
+        }
+      } catch (error) {
+        showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    async function login() {
+      const btn = document.getElementById('loginBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const user = loginUser.value;
+        const pass = loginPass.value;
+
+        if (!user || !pass) {
+          showAlert('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+          return;
+        }
+
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user, pass })
+        });
+
+        if (res.ok) {
+          loginBox.classList.add("hide");
+          bookingBox.classList.remove("hide");
+        } else {
+          showAlert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+        }
+      } catch (error) {
+        showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    async function book() {
+      const btn = document.getElementById('bookBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const date = document.getElementById("dateRange").value;
+        const time = document.getElementById("time").value;
+
+        if (!date || !time) {
+          showAlert('กรุณาเลือกวันที่และเวลา', 'error');
+          return;
+        }
+
+        const res = await fetch("/book", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ date, time })
+        });
+
+        const data = await res.json();
+        
+        if (res.ok) {
+          showAlert(data.message, 'success');
+          displayBookingResult(data.booking, data.recentBookings);
+        } else {
+          showAlert(data.message, 'error');
+        }
+      } catch (error) {
+        showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    function displayBookingResult(booking, recentBookings) {
+      const result = document.getElementById('bookingResult');
+      result.classList.remove('hide');
+
+      // Update booking details
+      document.getElementById('bookingId').textContent = booking.id;
+      document.getElementById('bookingUser').textContent = booking.user;
+      document.getElementById('bookingDate').textContent = booking.date;
+      document.getElementById('bookingTime').textContent = booking.time;
+      document.getElementById('bookingEmail').textContent = booking.email;
+      document.getElementById('emailStatus').textContent = booking.emailSent ? 'ส่งแล้ว' : 'ยังไม่ได้ส่ง';
+      document.getElementById('emailStatus').style.color = booking.emailSent ? 'var(--success-color)' : 'var(--error-color)';
+
+      // Update QR code
+      document.getElementById('qr').innerHTML = `<img src="${booking.qr}" alt="QR Code"/>`;
+
+      // Display recent bookings
+      const recentBookingsList = document.getElementById('recentBookingsList');
+      recentBookingsList.innerHTML = recentBookings.map(booking => `
+        <div class="booking-card">
+          <div class="detail-row">
+            <span class="detail-label">หมายเลขการจอง:</span>
+            <span class="detail-value">${booking.id}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">วันที่:</span>
+            <span class="detail-value">${booking.date}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">เวลา:</span>
+            <span class="detail-value">${booking.time}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Scroll to result
+      result.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function logout() {
+      try {
+        await fetch("/logout");
+        location.reload();
+      } catch (error) {
+        showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+      }
+    }
+  </script>
+</body>
+</html>
